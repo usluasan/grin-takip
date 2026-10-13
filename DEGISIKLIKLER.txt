@@ -1,0 +1,6 @@
+GRIN Takip - Degisiklikler (sade liste; yeni kayit en alta)
+
+[13 Ekim 2026] Depo kuruldu
+  - Proje dosyalari (modul yazilimi, masa testi kodlari, sunucu, web uygulamasi) GitHub'da
+    ozel (private) "grin-takip" deposuna alindi. Kodda degisiklik yapilmadi.
+  - Sifre dosyasi (.env), olcum dosyalari ve SD kart dokumleri depoya girmeyecek sekilde ayarlandi.

@@ -1,0 +1,1 @@
+Not: config.h ve sensors.h grin_module'den kopyadır; grin_module değişince yeniden kopyala.

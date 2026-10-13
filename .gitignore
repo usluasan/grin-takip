@@ -1,0 +1,37 @@
+# Gizli ayarlar — ASLA commit edilmez (.env.example kalır)
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Web
+node_modules/
+dist/
+
+# macOS
+.DS_Store
+
+# Ölçüm dosyaları ve SD kart dökümleri
+*.csv
+*.jsonl
+sd_dokum/
+sd-dokum/
+olcum/
+
+# Veritabanı verisi ve yüklenen fotoğraflar
+db_data/
+pgdata/
+uploads/
+*.sql.gz
+*.dump
+
+# Arduino derleme çıktıları
+build/
+*.bin
+*.elf

@@ -1,0 +1,9 @@
+# API/ingest kullanıcısı her şeyi görür
+user grin-api
+topic readwrite grin/#
+
+# Cihazlar: kullanıcı adı = device_id; %u kendi adıyla eşleşir
+pattern write grin/%u/telemetry
+pattern write grin/%u/status
+pattern write grin/%u/event
+pattern read grin/%u/cmd

@@ -1,0 +1,4 @@
+# GRIN Takip - makine-okunur degisiklik gunlugu. Yeni kayit EN ALTA.
+# ID | TARIH | SURUM | TUR | DOSYA/BOLUM | ETKI | NOT
+# TUR: FEAT, FIX, UI, INFRA, DATA, DOC, HW
+G001 | 2026-10-13 | v0.1.0 | INFRA | repo (tum klasorler), .gitignore | claude.ai "arteverte" projesinden devralinan icerik (grin-takip-repo.zip) repoya ilk icerik olarak alindi; .gitignore eklendi | kod degisikligi yok; .pytest_cache alinmadi; DEVIR-NOTU.md dosya izni 600->644
