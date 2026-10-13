@@ -11,3 +11,8 @@ GRIN Takip - Degisiklikler (sade liste; yeni kayit en alta)
   - Ilk surum v0.1.0 "Borlaug". Kontrol sonucu: web uygulamasi derleniyor; 13 masa testi kodu
     derleniyor; ana modul yazilimi (grin_module) henuz derlenmiyor; sunucu testleri bu Mac'te
     calistirilamadi (Python surumu eski).
+
+[13 Ekim 2026] README yenilendi
+  - "Nasil calistirilir" anlatimi: sadece arayuzu gorme, USB kablosuyla karttan uygulamaya canli
+    veri (masa testi), kodlari derleme ve sunucu testleri. Hangi parcanin test edildigi tabloda.
+  - Not: USB koprusu adimlari henuz denenmedi (Docker Desktop kurulunca denenecek).

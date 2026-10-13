@@ -1,93 +1,131 @@
-# GRIN Akıllı Çim Biçme Takip Sistemi — Kod Deposu
+# GRIN Akıllı Çim Biçme Takip Sistemi
 
-Arteverte / GRIN Türkiye pilot projesi. Üç parça, tek depo:
+Arteverte Peyzaj / GRIN Türkiye pilot projesi. Benzinli yürüyüşlü GRIN çim biçme makinesine takılan modül (sensörler + RTK GPS + 4G) ve verisini gösteren web/PWA uygulaması. Amaç: malçlama sayesinde torbalı biçime göre karbon tasarrufunu ölçüp denetlenebilir biçimde kanıtlamak.
 
-| Klasör | Ne | Teknoloji |
+Güncel sürüm: `SURUM` dosyası · Sürüm geçmişi: `SURUMLER.md` · Proje durumu ve donanım tablosu: `DEVIR-NOTU.md` · Ortak sözleşme: `SPEC.md` · Çalışma kuralları: `CLAUDE.md`
+
+| Klasör | Ne | Durum (2026-10-13) |
 |---|---|---|
-| `firmware/` | Makineye takılan modülün yazılımı (Waveshare ESP32-S3 A7670E) | Arduino C++ |
-| `backend/` | Veri alma (MQTT ingest) + REST API + veritabanı | Python FastAPI, PostgreSQL/PostGIS/TimescaleDB, Mosquitto |
-| `web/` | Yönetici paneli + saha (mobil PWA) arayüzü | React + TypeScript + Leaflet |
-| `SPEC.md` | Üç parçanın ortak sözleşmesi: veri formatı, MQTT konuları, API, DB şeması, karbon formülleri | — |
+| `arduino/01..13_*` | Masa testi sketch'leri (Waveshare ESP32-S3-A7670E-4G) | 13'ü de **derlendi**; `12_hepsi` **masa testi yapıldı**; `13_kopru` karta yüklenmedi |
+| `kopru/kopru.py` | USB köprüsü: kartın JSON satırı → MQTT | **test edilmedi** |
+| `firmware/grin_module/` | Ana firmware (4G + MQTT + GNSS + SD tampon) | **derlenmiyor** (kütüphaneler eksik, pinler eski) |
+| `firmware/sensor_test/` | Eski sensör testi | **derlenmiyor**; yerini `arduino/` aldı |
+| `backend/` | FastAPI + Mosquitto + PostgreSQL/PostGIS/TimescaleDB | Docker'da **hiç çalıştırılmadı**; pytest bu Mac'te **çalıştırılamadı** (Python 3.10+ gerekli) |
+| `web/` | React + Vite + Leaflet, yönetici + saha PWA | **build alındı**; API yoksa demo modu |
 
-Önce `SPEC.md`'yi oku; her şey oraya göre yazıldı.
-
-## 1. Sunucuda çalıştırma (5 dakika)
-
-Gerekli: Docker + Docker Compose (SAP sunucusunda ayrı bir VM/kullanıcı önerilir, 2 vCPU / 4 GB yeter).
+Tüm komutlar, aksi yazmıyorsa, Terminal'de `~/Projects/grin-takip` klasöründe çalıştırılır:
 
 ```bash
-unzip grin-takip.zip && cd grin-takip
-cp .env.example .env
-nano .env            # DB_PASSWORD, JWT_SECRET, MQTT_ADMIN_PASSWORD, ADMIN_PASSWORD → değiştir
-docker compose up -d --build
-docker compose logs -f api ingest    # "Uvicorn running" ve "MQTT bağlı" görünce hazır
+cd ~/Projects/grin-takip
 ```
 
-Açılan adresler (sunucu IP'si ile):
+## 1. Yalnız arayüzü görmek (demo modu, Docker gerekmez)
+
+```bash
+cd ~/Projects/grin-takip/web
+npm ci
+npm run dev
+```
+
+Tarayıcıda `http://localhost:5173` aç. API olmadığı için uygulama kendiliğinden **demo moduna** geçer (sahte veri).
+Demo giriş: `manager@demo.com` ya da `operator@demo.com`, şifre `demo123` (yalnız demo verisi).
+
+## 2. Masa testi: karttan uygulamaya canlı veri (USB köprüsü)
+
+SIM hattı açılana kadar veri 4G yerine USB kablosundan geçer:
+
+```
+Kart (13_kopru) ──USB──▶ kopru.py (Mac) ──MQTT──▶ Mosquitto ──▶ ingest ──▶ PostgreSQL
+                                                                    Web ◀── api
+```
+
+> Bu akış henüz uçtan uca **test edilmedi** (Mac'te Docker Desktop yok). Adımlar plandır.
+
+**Adım 1 — Docker Desktop kur** (bir kez): https://www.docker.com/products/docker-desktop → "Mac with Apple chip". Kurulunca Docker Desktop'ı aç, balina simgesi sabitlenene kadar bekle.
+
+**Adım 2 — Sunucu yığınını başlat:**
+
+```bash
+cd ~/Projects/grin-takip
+cp .env.example .env
+docker compose up -d --build
+docker compose logs -f api ingest
+```
+
+"Uvicorn running" ve "MQTT bağlı" görünce hazır (`Ctrl+C` yalnız log izlemeyi bırakır). İlk açılışta `mqtt` konteyneri 1–2 kez yeniden başlayabilir.
+`.env` yalnız senin Mac'inde kalır, repoya girmez. Masa testi için varsayılan değerler yeterli; sunucuya kurarken hepsi değiştirilir.
+
+**Adım 3 — `13_kopru` sketch'ini karta yükle:** Arduino IDE → `arduino/13_kopru/13_kopru.ino` aç → Kart: **ESP32S3 Dev Module**, USB CDC On Boot **Enabled**, Flash **16MB**, PSRAM **OPI PSRAM** → Upload. Sonra **Serial Monitor'ü KAPAT** (portu o tutarsa köprü bağlanamaz).
+
+**Adım 4 — Köprüyü çalıştır:**
+
+```bash
+cd ~/Projects/grin-takip/kopru
+python3 -m venv .venv
+.venv/bin/pip install pyserial paho-mqtt
+.venv/bin/python kopru.py
+```
+
+Her saniye `#1 gönderildi: ön … mm | arka … mm …` satırı görmelisin. Durdurmak: `Ctrl+C`.
+
+**Adım 5 — Uygulamada bak:** `http://localhost:8080` → `manager@demo.com` / `demo123` → Canlı Harita'da **GRIN-01**.
+GPS henüz olmadığı için köprü sabit bir test konumu yollar (`fix=1`); bu veri **alan ve karbon hesabına girmez** (alan için `fix>=4` gerekir).
+
+Kapatmak: `docker compose down` (veriler kalır).
 
 | Adres | Ne |
 |---|---|
-| `http://SUNUCU:8080` | Web uygulaması |
-| `http://SUNUCU:8000/docs` | API dokümanı (Swagger) |
-| `SUNUCU:1883` | MQTT (modüller buraya bağlanır) — güvenlik duvarında bu portu aç |
+| `http://localhost:8080` | Web uygulaması |
+| `http://localhost:8000/docs` | API dokümanı (Swagger) |
+| `localhost:1883` | MQTT |
 
-Giriş: `.env`'deki `ADMIN_EMAIL` / `ADMIN_PASSWORD` (varsayılan `admin@arteverte.com` / `admin123`).
-`SEED_DEMO=1` iken demo veri de gelir: `manager@demo.com` ve `operator@demo.com` (şifre `demo123`), makineler `GRIN-01`/`GRIN-02`.
+## 3. Sketch'leri derleme (komut satırı)
 
-Web uygulaması API'ye ulaşamazsa kendiliğinden **demo moduna** geçer (sahte veriyle çalışır) — tasarımı göstermek için yeterli.
+Arduino IDE'nin içinde gelen `arduino-cli` kullanılır (ayrı kurulum gerekmez):
 
-## 2. Yeni makine ekleme → modül token'ı
+```bash
+cd ~/Projects/grin-takip
+"/Applications/Arduino IDE.app/Contents/Resources/app/lib/backend/resources/arduino-cli" compile --fqbn esp32:esp32:esp32s3:CDCOnBoot=cdc arduino/12_hepsi
+```
 
-1. Web → Müşteriler → müşteri seç → Makine ekle (`device_id` örn. `GRIN-03`).
-2. Dönen **device_token yalnızca bir kez gösterilir**; kopyala.
-3. `firmware/grin_module/config.h` içine `DEVICE_ID` ve `DEVICE_TOKEN` yaz.
-4. Sunucuda: `docker compose kill -s HUP mqtt` (broker yeni cihazı tanısın).
+Gerekli: esp32 core 3.3.x; kütüphaneler `Adafruit BME280 Library`, `Adafruit Unified Sensor`, `Adafruit BusIO`, `VL53L1X` (Pololu). MPU6050 klon olduğu için kütüphanesiz, ham register ile okunur.
+Pinler ve bilinen tuzaklar: `DEVIR-NOTU.md` §3.
+
+`firmware/grin_module` ayrıca `TinyGSM`, `PubSubClient`, `ArduinoJson`, `TinyGPSPlus`, `Adafruit NeoPixel`, `Adafruit ADS1X15`, `EspSoftwareSerial` ister (liste: `firmware/README.md`); bunlar kurulu değil ve kod masa testinde doğrulanan pinlerle henüz güncellenmedi.
+
+## 4. Backend testleri
+
+Python **3.10 ya da üstü** gerekir (hedef 3.12; macOS ile gelen 3.9 çalıştırmaz).
+
+```bash
+cd ~/Projects/grin-takip/backend
+python3.12 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python -m pytest
+```
 
 Ayrıntı ve curl örnekleri: `backend/README.md`.
 
-## 3. Modülü programlama
-
-1. Arduino IDE 2.x → Boards Manager → **esp32 by Espressif 3.x**.
-2. Kart: **ESP32S3 Dev Module**; USB CDC On Boot **Enabled**; PSRAM **OPI**; Flash **16MB**.
-3. Kütüphaneleri kur (liste `firmware/README.md`).
-4. Önce `firmware/sensor_test/` yükle → Serial Monitor'de her sensörün değerini gör. Beton zeminde `c` + Enter ile montaj yüksekliği kalibrasyonu.
-5. Sonra `firmware/grin_module/` → `config.h`'de APN, `MQTT_HOST` (sunucu IP), token, NTRIP bilgileri → yükle.
-
-Pin planı: `firmware/grin_module/config.h` = Masa Bağlantı Rehberi ile aynı.
-
-## 4. Veri akışı (özet)
-
-```
-Modül ──4G/MQTT──▶ Mosquitto ──▶ ingest ──▶ PostgreSQL (TimescaleDB + PostGIS)
-                                                 │
-Web (yönetici / saha) ◀── REST + WebSocket ◀── api
-```
-
-- Modül saniyede 1 telemetri paketi yollar (`grin/<device_id>/telemetry`).
-- `ingest` paketi yazar, `mowing` durumu başlayınca **oturum** açar, 10 dk `mowing` yoksa kapatır; oturum kapanınca alan (m²), çim miktarı (kg) ve karbon tasarrufu hesaplanıp `savings` tablosuna yazılır.
-- Karbon formülleri ve kaynaklı emisyon faktörleri `factors` tablosunda (`is_assumption` ile işaretli); web'den düzenlenebilir.
-
-## 5. Geliştirme (Docker'sız)
+## 5. Web build
 
 ```bash
-# backend
-cd backend && python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
-pytest                      # 15 test
-# web
-cd web && npm install && npm run dev   # http://localhost:5173, API yoksa demo modu
+cd ~/Projects/grin-takip/web
+npm ci
+npm run build
 ```
 
-## 6. Henüz doğrulanmamış / bilinen eksikler
+## 6. Sunucuya kurulum (pilot — henüz yapılmadı)
 
-Dürüst liste — ilk denemede bunlara bakılmalı:
+Adım 2'deki aynı `docker compose` yığını, sahibinin kendi sunucusunda ayrı bir Docker yığını olarak çalışacak. Kurmadan önce `.env` içindeki `DB_PASSWORD`, `JWT_SECRET`, `MQTT_ADMIN_PASSWORD`, `ADMIN_PASSWORD` değiştirilir, `SEED_DEMO=0` yapılır; modüllerin bağlanması için 1883 portu açılır. Dışa açarken 8080/8000 önüne HTTPS, MQTT için TLS 8883 — pilot sonrası.
 
-- **Firmware derlenmedi.** Bu ortamda ESP32 araç zinciri kurulamadı; ilk `Verify` sırasında küçük derleme hataları çıkabilir (kütüphane sürüm farkı vb.). Hata metnini gönder, düzeltirim.
-- **Modem UART pinleri (18/17)** kart dokümanına göre; `sensor_test`'ten sonra rehberdeki AT testiyle doğrula.
-- `docker compose up` canlı sunucuda henüz çalıştırılmadı; `init.sql` test edilmedi. İlk açılışta `mqtt` konteyneri parola dosyası yazılana kadar 1–2 kez yeniden başlar, normaldir.
-- Firmware'de yapılacaklar: OTA güncelleme, telemetri periyodu komutu, kalibrasyonu kalıcı saklama (NVS), TLS MQTT (8883), gerçek hAcc (UBX).
-- RTK için TUSAGA-Aktif aboneliği ve ZED-F9P (Mouser siparişi) bekliyor; GNSS olmadan sistem çalışır ama alan hesabı yapılmaz (`fix=0`).
-- Sunucuyu dışa açarken: 8080/8000 önüne HTTPS (Caddy/nginx), 1883 yerine 8883 — pilot sonrası.
+Yeni makine ekleme ve cihaz token'ı: `backend/README.md` §3.
 
-## 7. Sonraki aşamalar
+## 7. Bilinen eksikler
 
-3 — Devre şeması / PCB / IP67 muhafaza · 4 — Firmware eksiklerinin tamamlanması · 7 — Karbon hesap raporu (çevre kurumları için) · 8 — Saha test planı
+- Backend Docker'da hiç ayağa kaldırılmadı; `init.sql` test edilmedi.
+- Modem (A7670E): SIM hattı açılmadı; UART pinleri ve APN **doğrulanacak** (`arduino/09_modem_test`).
+- RTK (ZED-F9P + ANN-MB-00) ve ADS1115 + kapasitif toprak nemi siparişte; GNSS olmadan alan hesabı yapılmaz.
+- Ana firmware: SD tampon, status paketi, OTA, NVS kalibrasyon, TLS MQTT yapılacak.
+- Karbon katsayılarının çoğu "varsayım" işaretli (`SPEC.md` §5); saha kalibrasyonu bekliyor.
+
+İşlerin güncel listesi: https://github.com/usluasan/grin-takip/issues
