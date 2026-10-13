@@ -1,0 +1,59 @@
+# GRIN Takip — Sürümler
+
+Sürüm geçmişi: hangi sürümde ne var, test durumu ne ve o sürüme nasıl dönülür.
+Yeni sürüm EN ALTA eklenir. Güncel sürüm ayrıca `SURUM` dosyasında tek satır olarak durur.
+
+## Sürüm numarası nasıl okunur
+
+`vMAJOR.MINOR.PATCH Kodad` — örnek: `v0.1.0 Borlaug`
+
+| Basamak | Ne zaman artar | Kodad |
+|---|---|---|
+| PATCH (v0.1.**1**) | Hata düzeltme, küçük düzeltme, belge | Aynı kalır |
+| MINOR (v0.**2**.0) | Yeni özellik, yeni sensör, yeni ekran | Yeni ad |
+| MAJOR (v**1**.0.0) | Veri yapısı / paket sözleşmesi değişimi, geriye uyumsuz değişiklik | Yeni ad |
+
+Kodadlar botanikçi ve ziraatçıların soyadlarıdır; kullanılmış ad tekrar kullanılmaz.
+Kullanılanlar: Borlaug (Norman Borlaug, ziraatçı).
+
+## Bir şeyi bulmak ve geri dönmek
+
+Tüm komutlar `~/Projects/grin-takip` klasöründe çalıştırılır.
+
+| Amaç | Komut |
+|---|---|
+| Sürümleri listele | `git tag -n1` |
+| Commit geçmişini kısa gör | `git log --oneline` |
+| Bir kaydın (ör. G012) commit'ini bul | `git log --grep=G012` |
+| Bir commit'te ne değişti | `git show <commit>` |
+| İki sürüm arasında ne değişti | `git diff v0.1.0 v0.2.0 --stat` |
+| Eski sürüme sadece bakmak | `git switch --detach v0.1.0` (geri gelmek için: `git switch main`) |
+| Tek bir commit'i geri almak (geçmişi silmeden) | `git revert <commit>` |
+
+Geri alma her zaman `git revert` ile yapılır; `git reset --hard` ve zorla push kullanılmaz.
+Veritabanı verisi ve SD kart ölçümleri git'te olmadığı için sürüm değiştirmek veriyi geri almaz.
+
+---
+
+## v0.1.0 Borlaug — 13 Ekim 2026
+
+İlk sürüm: claude.ai "arteverte" projesinden devralınan kodun repoya alınması + çalışma kuralları. Kod değişikliği yok.
+
+**İçerik** (kayıtlar: G001–G003, `git log --grep=G00`)
+- Devralınan içerik: `SPEC.md`, `arduino/01..13`, `firmware/`, `kopru/`, `backend/`, `web/`, `docker-compose.yml`.
+- `CLAUDE.md` (kalıcı kurallar), değişiklik günlükleri, sürüm düzeni, `.gitignore`.
+- `README.md` "nasıl çalıştırılır" odaklı yeniden yazıldı (USB köprüsü ile masa testi akışı).
+
+**Test durumu** (Mac, Apple Silicon, 2026-10-13)
+
+| Parça | Sonuç |
+|---|---|
+| `web/` — `npm ci && npm run build` (Node 22) | ✅ build alındı (tsc hatasız, 98 modül) |
+| `arduino/01..13` — arduino-cli 1.5.1, esp32 core 3.3.12, FQBN `esp32:esp32:esp32s3:CDCOnBoot=cdc` | ✅ 13/13 derlendi |
+| `arduino/12_hepsi` | masa testi yapıldı (2026-10-12, devir notuna göre; bu oturumda karta yüklenmedi) |
+| `arduino/13_kopru`, `kopru/kopru.py` | derlendi / karta yüklenmedi, köprü çalıştırılmadı |
+| `firmware/grin_module` | ❌ derlenmiyor: `TinyGsmClient.h` yok (kütüphaneler kurulu değil) |
+| `firmware/sensor_test` | ❌ derlenmiyor: `Adafruit_ADS1X15.h` yok |
+| `backend/` — pytest | ❌ çalıştırılamadı: Mac'te yalnız Python 3.9.6 var, kod 3.10+ istiyor (`float \| None`); 15 test toplanamadı |
+| Docker yığını (`docker compose up`) | test edilmedi (Docker Desktop kurulu değil) |
+| Sahada | hiçbir şey test edilmedi |

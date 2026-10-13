@@ -4,3 +4,10 @@ GRIN Takip - Degisiklikler (sade liste; yeni kayit en alta)
   - Proje dosyalari (modul yazilimi, masa testi kodlari, sunucu, web uygulamasi) GitHub'da
     ozel (private) "grin-takip" deposuna alindi. Kodda degisiklik yapilmadi.
   - Sifre dosyasi (.env), olcum dosyalari ve SD kart dokumleri depoya girmeyecek sekilde ayarlandi.
+
+[13 Ekim 2026] Calisma kurallari ve ilk surum (v0.1.0 Borlaug)
+  - CLAUDE.md yazildi: Turkce, adim adim anlatim, degisiklik gunlugu, commit bicimi, guvenlik,
+    durustluk (derlendi / masa testi / sahada test ayrimi) ve proje kurallari.
+  - Ilk surum v0.1.0 "Borlaug". Kontrol sonucu: web uygulamasi derleniyor; 13 masa testi kodu
+    derleniyor; ana modul yazilimi (grin_module) henuz derlenmiyor; sunucu testleri bu Mac'te
+    calistirilamadi (Python surumu eski).
