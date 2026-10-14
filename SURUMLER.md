@@ -79,3 +79,27 @@ PATCH: 4G modem masa testinde doğrulandı + kart ayarı düzeltmesi. Kayıtlar:
 | Karttan MQTT | test edilmedi (sunucu yok, #1/#6) |
 | `firmware/grin_module` | değişmedi: hâlâ derlenmiyor (#8); pin değişikliği derlenmedi |
 | backend pytest | hâlâ çalıştırılamadı (#12) |
+
+---
+
+## v0.1.2 Borlaug — 14 Ekim 2026
+
+PATCH: Docker yığını ilk kez çalıştı, kart → web uçtan uca masa testi. Kayıtlar: G007–G010.
+
+**İçerik**
+- G007 (FIX backend): Mosquitto parola dosyası mosquitto kullanıcısına (1883:1883) ait yazılıyor — önceden broker hiç açılmıyordu.
+- G008 (FIX web): nginx api adresini Docker DNS'inden yeniden çözüyor — önceden api yeniden başlayınca web 502 alıp demo verisine düşüyordu.
+- G009 (DOC): README / DEVIR-NOTU / CLAUDE.md test sonuçları ve komutlar.
+
+**Test durumu** (Mac, Docker Desktop 29.8.2, 2026-10-14)
+
+| Parça | Sonuç |
+|---|---|
+| `docker compose up -d --build` | ✅ 5 konteyner ayakta (db, mqtt, api, ingest, web); `init.sql` ilk kez çalıştı |
+| backend pytest (Docker, Python 3.12) | ✅ 15/15 |
+| `arduino/13_kopru` | ✅ karta yüklendi; 5 I2C cihazı + SD OK |
+| `kopru/kopru.py` | ✅ ~150 paket gönderildi; veritabanına yazıldı (fix=1, hacc=5) |
+| Web (gerçek API) | ✅ giriş, genel bakış, canlı harita (GRIN-01 "Duruyor"), `/machines/live`, `/ws/live` canlı telemetri |
+| Oturum açma/kapama, alan ve karbon hesabı | test edilmedi (biçme durumu ve RTK gerekiyor) |
+| Karttan doğrudan MQTT (4G) | test edilmedi (sunucu dışarıdan erişilebilir değil) |
+| Sunucu kurulumu | test edilmedi |

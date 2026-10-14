@@ -4,13 +4,13 @@ Arteverte Peyzaj / GRIN Türkiye pilot projesi. Benzinli yürüyüşlü GRIN çi
 
 Güncel sürüm: `SURUM` dosyası · Sürüm geçmişi: `SURUMLER.md` · Proje durumu ve donanım tablosu: `DEVIR-NOTU.md` · Ortak sözleşme: `SPEC.md` · Çalışma kuralları: `CLAUDE.md`
 
-| Klasör | Ne | Durum (2026-10-13) |
+| Klasör | Ne | Durum (2026-10-14) |
 |---|---|---|
-| `arduino/01..13_*` | Masa testi sketch'leri (Waveshare ESP32-S3-A7670E-4G) | 13'ü de **derlendi**; `12_hepsi` **masa testi yapıldı**; `13_kopru` karta yüklenmedi |
-| `kopru/kopru.py` | USB köprüsü: kartın JSON satırı → MQTT | **test edilmedi** |
+| `arduino/01..13_*` | Masa testi sketch'leri (Waveshare ESP32-S3-A7670E-4G) | 13'ü de **derlendi**; `12_hepsi`, `09_modem_test` (4G + internet) ve `13_kopru` **masa testi yapıldı** |
+| `kopru/kopru.py` | USB köprüsü: kartın JSON satırı → MQTT | **masa testi yapıldı** (2026-10-14, uçtan uca) |
 | `firmware/grin_module/` | Ana firmware (4G + MQTT + GNSS + SD tampon) | **derlenmiyor** (kütüphaneler eksik, pinler eski) |
 | `firmware/sensor_test/` | Eski sensör testi | **derlenmiyor**; yerini `arduino/` aldı |
-| `backend/` | FastAPI + Mosquitto + PostgreSQL/PostGIS/TimescaleDB | Docker'da **hiç çalıştırılmadı**; pytest bu Mac'te **çalıştırılamadı** (Python 3.10+ gerekli) |
+| `backend/` | FastAPI + Mosquitto + PostgreSQL/PostGIS/TimescaleDB | Mac'te Docker ile **çalıştı** (2026-10-14); pytest **15/15 geçti** (Docker içinde, Python 3.12); sunucuya kurulmadı |
 | `web/` | React + Vite + Leaflet, yönetici + saha PWA | **build alındı**; API yoksa demo modu |
 
 Tüm komutlar, aksi yazmıyorsa, Terminal'de `~/Projects/grin-takip` klasöründe çalıştırılır:
@@ -39,9 +39,11 @@ Kart (13_kopru) ──USB──▶ kopru.py (Mac) ──MQTT──▶ Mosquitto 
                                                                     Web ◀── api
 ```
 
-> Bu akış henüz uçtan uca **test edilmedi** (Mac'te Docker Desktop yok). Adımlar plandır.
+> 2026-10-14 masa testinde uçtan uca **çalıştı**: kart → köprü → MQTT → veritabanı → web (canlı harita + WebSocket).
 
-**Adım 1 — Docker Desktop kur** (bir kez): https://www.docker.com/products/docker-desktop → "Mac with Apple chip". Kurulunca Docker Desktop'ı aç, balina simgesi sabitlenene kadar bekle.
+**Adım 1 — Docker Desktop kur** (bir kez): https://www.docker.com/products/docker-desktop → "Mac with Apple chip". Kurulunca Docker Desktop'ı aç, balina simgesi sabitlenene kadar bekle. `docker` komutu kurulumdan sonra açılan **yeni** Terminal pencerelerinde çalışır (eski pencereyi kapatıp yenisini aç).
+
+Sonraki seferlerde yalnız Docker Desktop'ın açık olması yeterli; Adım 2'deki `docker compose up -d` konteynerleri yeniden başlatır.
 
 **Adım 2 — Sunucu yığınını başlat:**
 
@@ -52,7 +54,7 @@ docker compose up -d --build
 docker compose logs -f api ingest
 ```
 
-"Uvicorn running" ve "MQTT bağlı" görünce hazır (`Ctrl+C` yalnız log izlemeyi bırakır). İlk açılışta `mqtt` konteyneri 1–2 kez yeniden başlayabilir.
+"Uvicorn running" ve "MQTT bağlı" görünce hazır (`Ctrl+C` yalnız log izlemeyi bırakır). İlk açılışta `mqtt` konteyneri, API parola dosyasını yazana kadar birkaç saniye yeniden başlayabilir; normaldir. Hepsini görmek: `docker compose ps` (beşi de `Up` olmalı).
 `.env` yalnız senin Mac'inde kalır, repoya girmez. Masa testi için varsayılan değerler yeterli; sunucuya kurarken hepsi değiştirilir.
 
 **Adım 3 — `13_kopru` sketch'ini karta yükle:** Arduino IDE → `arduino/13_kopru/13_kopru.ino` aç → Kart: **ESP32S3 Dev Module**, USB CDC On Boot **Disabled** (Enabled olursa Serial Monitor'de bozuk karakter görünür) → Upload. Sonra **Serial Monitor'ü KAPAT** (portu o tutarsa köprü bağlanamaz).
@@ -70,6 +72,8 @@ Her saniye `#1 gönderildi: ön … mm | arka … mm …` satırı görmelisin. 
 
 **Adım 5 — Uygulamada bak:** `http://localhost:8080` → `manager@demo.com` / `demo123` → Canlı Harita'da **GRIN-01**.
 GPS henüz olmadığı için köprü sabit bir test konumu yollar (`fix=1`); bu veri **alan ve karbon hesabına girmez** (alan için `fix>=4` gerekir).
+Dikkat: bu testte `h_pre` / `h_post` alanlarında **çim boyu değil, sensörün ölçtüğü ham mesafe** (mm) görünür; çim boyu hesabı ana yazılıma eklenecek (#8).
+Üstte "API'ye ulaşılamıyor — demo verisi" bandı görürsen ekrandaki sayılar sahtedir: `docker compose ps` ile konteynerlere bak.
 
 Kapatmak: `docker compose down` (veriler kalır).
 
@@ -97,14 +101,14 @@ Pinler ve bilinen tuzaklar: `DEVIR-NOTU.md` §3.
 
 ## 4. Backend testleri
 
-Python **3.10 ya da üstü** gerekir (hedef 3.12; macOS ile gelen 3.9 çalıştırmaz).
+Docker içinde, sunucuyla aynı Python 3.12 ile (macOS ile gelen Python 3.9 bu kodu çalıştırmaz). Önce Adım 2'deki imajlar derlenmiş olmalı:
 
 ```bash
-cd ~/Projects/grin-takip/backend
-python3.12 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-.venv/bin/python -m pytest
+cd ~/Projects/grin-takip
+docker compose run --rm --no-deps -T -v "$PWD/backend/tests:/srv/tests:ro" api python -m pytest -q -p no:cacheprovider tests
 ```
+
+Beklenen: `15 passed`.
 
 Ayrıntı ve curl örnekleri: `backend/README.md`.
 
@@ -124,8 +128,8 @@ Yeni makine ekleme ve cihaz token'ı: `backend/README.md` §3.
 
 ## 7. Bilinen eksikler
 
-- Backend Docker'da hiç ayağa kaldırılmadı; `init.sql` test edilmedi.
-- Modem (A7670E): SIM hattı açılmadı; UART pinleri ve APN **doğrulanacak** (`arduino/09_modem_test`).
+- Backend yalnız Mac'te (Docker) çalıştırıldı; sunucuya kurulmadı. Oturum açma/kapama ve alan hesabı gerçek veriyle denenmedi (biçme durumu + RTK gerekiyor).
+- Modem (A7670E) 4G + internet doğrulandı; karttan doğrudan MQTT henüz yok (#7).
 - RTK (ZED-F9P + ANN-MB-00) ve ADS1115 + kapasitif toprak nemi siparişte; GNSS olmadan alan hesabı yapılmaz.
 - Ana firmware: SD tampon, status paketi, OTA, NVS kalibrasyon, TLS MQTT yapılacak.
 - Karbon katsayılarının çoğu "varsayım" işaretli (`SPEC.md` §5); saha kalibrasyonu bekliyor.

@@ -39,3 +39,10 @@ GRIN Takip - Degisiklikler (sade liste; yeni kayit en alta)
 [14 Ekim 2026] Web uygulamasi sunucuyu kaybetmiyor
   - Sunucu parcasi yeniden baslatildiginda web uygulamasi baglantiyi kaybedip gercek veri yerine
     ornek (demo) veri gosteriyordu. Duzeltildi.
+
+[14 Ekim 2026] Karttan uygulamaya canli veri — ilk kez calisti (surum v0.1.2 Borlaug)
+  - Kart USB kablosuyla Mac'e, Mac'teki kopru programi sunucuya veri yolladi; web uygulamasinda
+    GRIN-01 canli haritada gorundu (sicaklik, nem, pil, titresim her saniye geliyor).
+  - Bu testte "cim boyu" alanlarinda henuz cim boyu degil, sensorun olctugu ham mesafe gorunur
+    (senin kararin: A). Gercek cim boyu hesabi ana yazilima eklenecek.
+  - README guncellendi: sunucu testleri artik Docker icinde calistiriliyor.

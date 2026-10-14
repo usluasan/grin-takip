@@ -66,7 +66,7 @@ Geri alma: git revert <bu commit> (ek adım varsa yaz)
 - `DEVIR-NOTU.md` — proje durumu, donanım tablosu (§3), verilen kararlar (§4), sıradaki işler (§6).
 - `arduino/01..13_*` — masa testi sketch'leri. `firmware/grin_module/` — ana firmware (henüz derlenmiyor). `firmware/sensor_test/` — eski test kodu.
 - `kopru/kopru.py` — USB köprüsü: kart JSON satırı → MQTT (SIM yokken masa testi).
-- `backend/` — FastAPI + Mosquitto + PostgreSQL/PostGIS/TimescaleDB. Python 3.10+ gerekir (hedef 3.12).
+- `backend/` — FastAPI + Mosquitto + PostgreSQL/PostGIS/TimescaleDB. Python 3.10+ gerekir (hedef 3.12); Mac'te Docker ile çalışır.
 - `web/` — React + Vite + Leaflet; API yoksa demo moduna düşer.
 - Nasıl çalıştırılır: `README.md`. Sürüm geçmişi: `SURUMLER.md`.
 
@@ -75,6 +75,6 @@ Geri alma: git revert <bu commit> (ek adım varsa yaz)
 Hepsi `~/Projects/grin-takip` klasöründen:
 
 - Web: `cd web && npm ci && npm run build`
-- Backend: `cd backend && python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/python -m pytest`
+- Backend (Docker içinde, Python 3.12; Mac'teki Python 3.9 çalıştırmaz): `docker compose run --rm --no-deps -T -v "$PWD/backend/tests:/srv/tests:ro" api python -m pytest -q -p no:cacheprovider tests`
 - Arduino (arduino-cli, Arduino IDE'nin içindeki kopya): 
   `"/Applications/Arduino IDE.app/Contents/Resources/app/lib/backend/resources/arduino-cli" compile --fqbn esp32:esp32:esp32s3 arduino/12_hepsi` (USB CDC On Boot KAPALI kalır; `CDCOnBoot=cdc` ile çıktı bozuk gelir — 2026-10-14)
