@@ -278,6 +278,6 @@ Ingest worker, cihazdan `state=mowing` görünce ve açık oturum yoksa oturum a
 | VL53L1X #2 XSHUT | 7 |
 | A02YYUW #1 / #2 (ESP RX) | 39 / 40 |
 | GNSS UART (ESP RX / TX) | 41 / 42 |
-| Modem UART (ESP RX / TX) | 18 / 17 (AT testiyle doğrula) |
+| Modem UART (ESP RX / TX) | 17 / 18, 115200 baud (AT testiyle doğrulandı, 2026-10-14) |
 | microSD (CMD/CLK/DATA) | 4 / 5 / 6 |
 | RGB LED | 38 |

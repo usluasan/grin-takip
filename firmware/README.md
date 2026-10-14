@@ -21,7 +21,7 @@ Kart: **Waveshare ESP32-S3 A7670E 4G**. Pinler: `grin_module/config.h` (SPEC §8
 | UART | Kullanım | Pin |
 |---|---|---|
 | 0 | Ön ultrasonik (sadece RX) — USB CDC açıkken UART0 boşta | 39 |
-| 1 | Modem A7670E | 18 / 17 |
+| 1 | Modem A7670E (ESP RX / TX, doğrulandı) | 17 / 18 |
 | 2 | RTK GNSS | 41 / 42 |
 | yazılım seri | Arka ultrasonik | 40 |
 

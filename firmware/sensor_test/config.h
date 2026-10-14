@@ -11,7 +11,7 @@
 #define CUT_WIDTH_CM     46
 
 // ---- Hücresel ----
-#define APN              "internet"      // Turkcell: internet, M2M: operatörün verdiği
+#define APN              "internet"      // Türk Telekom: "internet" (2026-10-14 doğrulandı)
 #define APN_USER         ""
 #define APN_PASS         ""
 #define SIM_PIN          ""              // boş = PIN kapalı
@@ -43,8 +43,8 @@
 #define PIN_US_REAR_RX   40
 #define PIN_GNSS_RX      41       // GNSS TX buraya
 #define PIN_GNSS_TX      42       // GNSS RX buraya
-#define PIN_MODEM_RX     18       // AT testiyle doğrula; ters ise 17/18 değiştir
-#define PIN_MODEM_TX     17
+#define PIN_MODEM_RX     17       // 09_modem_test ile doğrulandı (2026-10-14), 115200 baud
+#define PIN_MODEM_TX     18
 #define PIN_SD_CMD       4
 #define PIN_SD_CLK       5
 #define PIN_SD_DATA      6

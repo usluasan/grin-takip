@@ -30,7 +30,7 @@ Ana kart: Waveshare ESP32-S3-A7670E-4G VER 2.0 (Arduino: ESP32S3 Dev Module, USB
 | MAX17048 pil ölçer (kart üstü) | I2C 0x36, VCELL reg 0x02 ×78.125 µV | ✅ görünüyor |
 | A02YYUW ultrasonik | 3V3, sensör TX → IO39 (UART 9600, paket FF H L sum) | ✅ |
 | microSD 32 GB | SDMMC 1-bit CLK=5 CMD=4 D0=6 | ✅ |
-| A7670E modem | UART tahmini IO17/18 (09_modem_test otomatik arar), DIP 4G=ON CAM=OFF | ⏳ Türk Telekom nano SIM takılı, PIN kapalı, HAT HENÜZ AÇILMADI; APN "internet" doğrulanacak |
+| A7670E modem (A7670E-FASE, yazılım A7670M7_V1.11.1) | UART ESP RX=IO17, TX=IO18, 115200 baud (2026-10-14 `09_modem_test` ile doğrulandı), DIP 4G=ON CAM=OFF | ✅ Türk Telekom hattı açık (SIM READY, PIN kapalı), LTE kayıtlı (28603), sinyal CSQ 22, APN "internet" ile IP alındı, HTTP GET 200 (internet var). MQTT karttan henüz denenmedi |
 | ZED-F9P RTK (SparkFun GPS-RTK2 15136) + u-blox ANN-MB-00 | planlanan UART IO41/42 | ⏳ e-komponent siparişi |
 | ADS1115 + kapasitif toprak nem v1.2 ×2 | I2C | ⏳ sipariş (gelen 20079 dirençli tip, kullanılmayacak) |
 | Kamera | YOK (pinler çakışıyor) — 2. sürüm | karar |
@@ -51,7 +51,7 @@ Bilinen tuzaklar: Serial Monitor açılmadan setup çıktısı kaybolur (setup't
 
 ## 6. Sıradaki işler (öncelik sırası)
 1. Mac'e Docker Desktop kur → `docker compose up -d --build` → `13_kopru` karta yükle → `python3 kopru/kopru.py` → web'de GRIN-01 canlı (USB köprüsü; test konumu sabit, fix=1, alan hesabına girmez).
-2. SIM hattı açılınca `09_modem_test` → 4G + MQTT doğrudan karttan.
+2. ~~SIM hattı açılınca `09_modem_test`~~ ✅ 2026-10-14: 4G + internet doğrulandı → sırada MQTT doğrudan karttan (sunucu gerekli).
 3. `firmware/grin_module`'ü masa testinde doğrulanan pinler/kodla güncelle (12_hepsi + 13_kopru temel alınır), SD tampon (buffer.jsonl), status paketi.
 4. RTK gelince: ZED-F9P UART, NTRIP (TUSAGA), fix/hacc → alan hesabı.
 5. ADS1115 + toprak nemi.

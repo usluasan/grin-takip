@@ -16,3 +16,10 @@ GRIN Takip - Degisiklikler (sade liste; yeni kayit en alta)
   - "Nasil calistirilir" anlatimi: sadece arayuzu gorme, USB kablosuyla karttan uygulamaya canli
     veri (masa testi), kodlari derleme ve sunucu testleri. Hangi parcanin test edildigi tabloda.
   - Not: USB koprusu adimlari henuz denenmedi (Docker Desktop kurulunca denenecek).
+
+[14 Ekim 2026] 4G modem calisiyor
+  - Turk Telekom hatti acildi. Kart SIM'i gordu, 4G (LTE) sebekesine kaydoldu, sinyal iyi
+    (22/31), "internet" APN'i ile internete cikti ve bir web sayfasini indirdi.
+  - Modemin kartla konustugu pinler kesinlesti (IO17/IO18). Ana yazilimdaki ayar ters yazilmisti,
+    duzeltildi.
+  - Henuz denenmeyen: kartin kendisinin sunucuya (MQTT) veri yollamasi — once sunucu kurulmali.
