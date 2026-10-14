@@ -12,7 +12,7 @@ Kart: **Waveshare ESP32-S3 A7670E 4G**. Pinler: `grin_module/config.h` (SPEC §8
 ## Arduino IDE kurulumu
 
 1. Boards Manager → **esp32 by Espressif** (3.x).
-2. Tools → Board: **ESP32S3 Dev Module** · USB CDC On Boot: **Enabled** · PSRAM: **OPI PSRAM** · Flash Size: **16MB** · Partition Scheme: **Default 4MB with spiffs** (16MB varsa "16M Flash (3MB APP/9.9MB FATFS)").
+2. Tools → Board: **ESP32S3 Dev Module** · USB CDC On Boot: **Disabled** (Enabled ile çıktı bozuk gelir, 2026-10-14) · PSRAM: **OPI PSRAM** · Flash Size: **16MB** · Partition Scheme: **Default 4MB with spiffs** (16MB varsa "16M Flash (3MB APP/9.9MB FATFS)").
 3. Library Manager'dan kur: `TinyGSM`, `PubSubClient`, `ArduinoJson` (7.x), `TinyGPSPlus`, `Adafruit NeoPixel`, `Adafruit BME280 Library`, `Adafruit MPU6050`, `Adafruit Unified Sensor`, `VL53L1X` (Pololu), `Adafruit ADS1X15`, `EspSoftwareSerial`.
 4. `grin_module/config.h` içinde `DEVICE_ID`, `DEVICE_TOKEN` (backend'de makine eklenince verilir), `APN`, `MQTT_HOST`, NTRIP bilgileri.
 
@@ -20,7 +20,7 @@ Kart: **Waveshare ESP32-S3 A7670E 4G**. Pinler: `grin_module/config.h` (SPEC §8
 
 | UART | Kullanım | Pin |
 |---|---|---|
-| 0 | Ön ultrasonik (sadece RX) — USB CDC açıkken UART0 boşta | 39 |
+| 0 | Ön ultrasonik (sadece RX) — ⚠️ CDC kapalı olduğu için UART0 = Serial (USB); bu atama çakışıyor, #8'de değişecek | 39 |
 | 1 | Modem A7670E (ESP RX / TX, doğrulandı) | 17 / 18 |
 | 2 | RTK GNSS | 41 / 42 |
 | yazılım seri | Arka ultrasonik | 40 |

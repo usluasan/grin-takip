@@ -23,3 +23,7 @@ GRIN Takip - Degisiklikler (sade liste; yeni kayit en alta)
   - Modemin kartla konustugu pinler kesinlesti (IO17/IO18). Ana yazilimdaki ayar ters yazilmisti,
     duzeltildi.
   - Henuz denenmeyen: kartin kendisinin sunucuya (MQTT) veri yollamasi — once sunucu kurulmali.
+
+[14 Ekim 2026] Kart ayari duzeltmesi
+  - Arduino'da "USB CDC On Boot" ayari KAPALI (Disabled) olmali. Belgelerde "Enabled" yaziyordu;
+    bu ayarla Serial Monitor'de bozuk karakter geliyor. README ve notlar duzeltildi.

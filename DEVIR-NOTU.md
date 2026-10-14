@@ -19,7 +19,8 @@ Proje sahibi elektronik/yazılımda yeni başlayan; anlatım adım adım, Türk�
 | `docker-compose.yml`, `.env.example` | yerel/sunucu kurulum | Mac'te Docker Desktop henüz YOK |
 
 ## 3. Donanım (masa testi, 2026-10-12)
-Ana kart: Waveshare ESP32-S3-A7670E-4G VER 2.0 (Arduino: ESP32S3 Dev Module, USB CDC On Boot Enabled, Flash 16MB, PSRAM OPI; esp32 core 3.3.12; port /dev/cu.usbmodem5B910428841).
+Ana kart: Waveshare ESP32-S3-A7670E-4G VER 2.0 (Arduino: ESP32S3 Dev Module, USB CDC On Boot **Disabled** — 2026-10-14 denendi: Enabled ile Serial çıktısı bu porttan bozuk geliyor, Disabled ile düzgün; port büyük ihtimalle kart üstü USB-seri çipine bağlı. Flash 16MB, PSRAM OPI — Arduino IDE'de şu an 4MB / PSRAM disabled seçili, hangisiyle yüklendiği doğrulanacak; esp32 core 3.3.12; port /dev/cu.usbmodem5B910428841; arduino-cli FQBN `esp32:esp32:esp32s3`).
+Tasarım notu: CDC kapalıyken `Serial` UART0 üzerinden USB-seri çipine gider; `firmware/grin_module` ön ultrasoniği UART0'a koyuyor (`sensors.h`) → çakışır, #8'de çözülecek.
 
 | Bileşen | Bağlantı | Durum |
 |---|---|---|

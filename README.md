@@ -55,7 +55,7 @@ docker compose logs -f api ingest
 "Uvicorn running" ve "MQTT bağlı" görünce hazır (`Ctrl+C` yalnız log izlemeyi bırakır). İlk açılışta `mqtt` konteyneri 1–2 kez yeniden başlayabilir.
 `.env` yalnız senin Mac'inde kalır, repoya girmez. Masa testi için varsayılan değerler yeterli; sunucuya kurarken hepsi değiştirilir.
 
-**Adım 3 — `13_kopru` sketch'ini karta yükle:** Arduino IDE → `arduino/13_kopru/13_kopru.ino` aç → Kart: **ESP32S3 Dev Module**, USB CDC On Boot **Enabled**, Flash **16MB**, PSRAM **OPI PSRAM** → Upload. Sonra **Serial Monitor'ü KAPAT** (portu o tutarsa köprü bağlanamaz).
+**Adım 3 — `13_kopru` sketch'ini karta yükle:** Arduino IDE → `arduino/13_kopru/13_kopru.ino` aç → Kart: **ESP32S3 Dev Module**, USB CDC On Boot **Disabled** (Enabled olursa Serial Monitor'de bozuk karakter görünür) → Upload. Sonra **Serial Monitor'ü KAPAT** (portu o tutarsa köprü bağlanamaz).
 
 **Adım 4 — Köprüyü çalıştır:**
 
@@ -85,8 +85,10 @@ Arduino IDE'nin içinde gelen `arduino-cli` kullanılır (ayrı kurulum gerekmez
 
 ```bash
 cd ~/Projects/grin-takip
-"/Applications/Arduino IDE.app/Contents/Resources/app/lib/backend/resources/arduino-cli" compile --fqbn esp32:esp32:esp32s3:CDCOnBoot=cdc arduino/12_hepsi
+"/Applications/Arduino IDE.app/Contents/Resources/app/lib/backend/resources/arduino-cli" compile --fqbn esp32:esp32:esp32s3 arduino/12_hepsi
 ```
+
+Karta yüklemek için komutun sonuna ` -u -p /dev/cu.usbmodem5B910428841` eklenir (Serial Monitor kapalı olmalı). USB CDC On Boot kapalı kalmalı (FQBN'de `CDCOnBoot=cdc` YOK); açık olursa çıktı bozuk gelir.
 
 Gerekli: esp32 core 3.3.x; kütüphaneler `Adafruit BME280 Library`, `Adafruit Unified Sensor`, `Adafruit BusIO`, `VL53L1X` (Pololu). MPU6050 klon olduğu için kütüphanesiz, ham register ile okunur.
 Pinler ve bilinen tuzaklar: `DEVIR-NOTU.md` §3.

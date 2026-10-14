@@ -77,4 +77,4 @@ Hepsi `~/Projects/grin-takip` klasöründen:
 - Web: `cd web && npm ci && npm run build`
 - Backend: `cd backend && python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/python -m pytest`
 - Arduino (arduino-cli, Arduino IDE'nin içindeki kopya): 
-  `"/Applications/Arduino IDE.app/Contents/Resources/app/lib/backend/resources/arduino-cli" compile --fqbn esp32:esp32:esp32s3:CDCOnBoot=cdc arduino/12_hepsi`
+  `"/Applications/Arduino IDE.app/Contents/Resources/app/lib/backend/resources/arduino-cli" compile --fqbn esp32:esp32:esp32s3 arduino/12_hepsi` (USB CDC On Boot KAPALI kalır; `CDCOnBoot=cdc` ile çıktı bozuk gelir — 2026-10-14)
