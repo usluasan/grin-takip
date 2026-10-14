@@ -27,3 +27,6 @@ GRIN Takip - Degisiklikler (sade liste; yeni kayit en alta)
 [14 Ekim 2026] Kart ayari duzeltmesi
   - Arduino'da "USB CDC On Boot" ayari KAPALI (Disabled) olmali. Belgelerde "Enabled" yaziyordu;
     bu ayarla Serial Monitor'de bozuk karakter geliyor. README ve notlar duzeltildi.
+
+[14 Ekim 2026] Surum v0.1.1 Borlaug
+  - Yukaridaki iki duzeltme (4G modem dogrulandi, kart ayari) yeni surum olarak isaretlendi.

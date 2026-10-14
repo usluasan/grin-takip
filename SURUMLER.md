@@ -57,3 +57,25 @@ Veritabanı verisi ve SD kart ölçümleri git'te olmadığı için sürüm değ
 | `backend/` — pytest | ❌ çalıştırılamadı: Mac'te yalnız Python 3.9.6 var, kod 3.10+ istiyor (`float \| None`); 15 test toplanamadı |
 | Docker yığını (`docker compose up`) | test edilmedi (Docker Desktop kurulu değil) |
 | Sahada | hiçbir şey test edilmedi |
+
+---
+
+## v0.1.1 Borlaug — 14 Ekim 2026
+
+PATCH: 4G modem masa testinde doğrulandı + kart ayarı düzeltmesi. Kayıtlar: G004–G006.
+
+**İçerik**
+- G004 (HW): A7670E modem ESP RX=IO17 / TX=IO18, 115200 baud; Türk Telekom hattı açık, APN "internet" çalışıyor. Firmware ayarındaki ters modem pinleri düzeltildi.
+- G005 (FIX): USB CDC On Boot = **Disabled**; arduino-cli FQBN `esp32:esp32:esp32s3` (v0.1.0'daki `CDCOnBoot=cdc` yanlıştı).
+
+**Test durumu** (2026-10-14)
+
+| Parça | Sonuç |
+|---|---|
+| `arduino/09_modem_test` — FQBN `esp32:esp32:esp32s3` | ✅ derlendi, karta yüklendi, **masa testi yapıldı** |
+| Modem | ✅ ATI A7670E-FASE · SIM READY · LTE kayıtlı (28603) · CSQ 22 · IP alındı |
+| İnternet | ✅ modem üzerinden HTTP GET http://example.com → 200 (577 bayt) |
+| Aynı sketch `CDCOnBoot=cdc` ile | ❌ seri çıktı bozuk (ayar düzeltmesinin kanıtı) |
+| Karttan MQTT | test edilmedi (sunucu yok, #1/#6) |
+| `firmware/grin_module` | değişmedi: hâlâ derlenmiyor (#8); pin değişikliği derlenmedi |
+| backend pytest | hâlâ çalıştırılamadı (#12) |
