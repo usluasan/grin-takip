@@ -15,7 +15,7 @@ from .auth import hash_password
 from .config import settings
 from .db import SessionLocal
 from .models import Customer, Machine, User
-from .mosquitto_passwd import read_passwd, set_user
+from .mosquitto_passwd import read_passwd, set_user, write_passwd
 from .routers import (auth, customers, dashboard, devices, factors, live, machines, savings,
                       sessions, sites, users)
 
@@ -42,6 +42,9 @@ def ensure_mqtt_admin():
             set_user(settings.MQTT_PASSWD_FILE, settings.MQTT_ADMIN_USER, settings.MQTT_ADMIN_PASSWORD)
             log.info("Mosquitto passwd: %s eklendi (%s). Broker'ın yeniden okuması için: "
                      "docker compose kill -s HUP mqtt", settings.MQTT_ADMIN_USER, settings.MQTT_PASSWD_FILE)
+        else:
+            # Aynı içerikle yeniden yaz: sahiplik/izin eski kurulumlarda da mosquitto'ya geçsin
+            write_passwd(settings.MQTT_PASSWD_FILE, users)
     except OSError as e:
         log.warning("Mosquitto passwd dosyası yazılamadı (%s): %s", settings.MQTT_PASSWD_FILE, e)
 

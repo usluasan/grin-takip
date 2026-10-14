@@ -30,3 +30,8 @@ GRIN Takip - Degisiklikler (sade liste; yeni kayit en alta)
 
 [14 Ekim 2026] Surum v0.1.1 Borlaug
   - Yukaridaki iki duzeltme (4G modem dogrulandi, kart ayari) yeni surum olarak isaretlendi.
+
+[14 Ekim 2026] Sunucu ilk kez calistirildi — MQTT hatasi duzeltildi
+  - Docker ile sunucu yigini (veritabani, MQTT, API, ingest, web) ilk kez Mac'te ayaga kalkti.
+  - MQTT sunucusu sifre dosyasini okuyamadigi icin surekli kapanip aciliyordu. Dosya artik
+    MQTT sunucusunun okuyabilecegi sekilde yaziliyor. Sunucu testlerinin 15'i de gecti.

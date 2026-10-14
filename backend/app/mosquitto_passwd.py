@@ -13,6 +13,8 @@ import tempfile
 from typing import Dict
 
 ITERATIONS = 101
+# Dosya sahibi "uid:gid" — mosquitto imajındaki kullanıcı (docker run --rm --entrypoint id eclipse-mosquitto:2 mosquitto)
+PASSWD_OWNER = os.environ.get("MQTT_PASSWD_OWNER", "1883:1883")
 SALT_LEN = 12
 
 
@@ -54,7 +56,15 @@ def write_passwd(path: str, users: Dict[str, str]) -> None:
     with os.fdopen(fd, "w", encoding="utf-8") as f:
         for u, h in users.items():
             f.write(f"{u}:{h}\n")
-    os.chmod(tmp, 0o640)
+    os.chmod(tmp, 0o600)
+    # Mosquitto kendi kullanıcısıyla çalışır (eclipse-mosquitto:2 → 1883:1883); dosya root'un
+    # kalırsa broker açamaz. API konteyneri root olduğu için okumaya devam eder.
+    # Root olmayan ortamda (yerel test) sahiplik değiştirilemez → atlanır.
+    uid, gid = (int(x) for x in PASSWD_OWNER.split(":"))
+    try:
+        os.chown(tmp, uid, gid)
+    except PermissionError:
+        pass
     os.replace(tmp, path)
 
 
