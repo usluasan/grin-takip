@@ -35,3 +35,7 @@ GRIN Takip - Degisiklikler (sade liste; yeni kayit en alta)
   - Docker ile sunucu yigini (veritabani, MQTT, API, ingest, web) ilk kez Mac'te ayaga kalkti.
   - MQTT sunucusu sifre dosyasini okuyamadigi icin surekli kapanip aciliyordu. Dosya artik
     MQTT sunucusunun okuyabilecegi sekilde yaziliyor. Sunucu testlerinin 15'i de gecti.
+
+[14 Ekim 2026] Web uygulamasi sunucuyu kaybetmiyor
+  - Sunucu parcasi yeniden baslatildiginda web uygulamasi baglantiyi kaybedip gercek veri yerine
+    ornek (demo) veri gosteriyordu. Duzeltildi.
