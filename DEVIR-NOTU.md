@@ -51,7 +51,7 @@ Bilinen tuzaklar: Serial Monitor açılmadan setup çıktısı kaybolur (setup't
 - Aşamalar: 1 Mimari ✅ · 2 Bileşen ✅ · 3 Devre/PCB/kutu (taslak doc var, sahibi anlamadı → masa testine geçildi) · 4 Gömülü yazılım (devam) · 5 Backend (kod var, çalıştırılmadı) · 6 Uygulama (demo var) · 7 Karbon modeli (SPEC §5) · 8 Test planı.
 
 ## 6. Sıradaki işler (öncelik sırası)
-1. ~~Docker + USB köprüsüyle web'de GRIN-01 canlı~~ ✅ 2026-10-14 uçtan uca çalıştı. Not: köprü testinde h_pre/h_post ham mesafe (karar: A, 2026-10-14); oturum/alan hesabı denenmedi.
+1. ~~Docker + USB köprüsüyle web'de GRIN-01 canlı~~ ✅ 2026-10-14 uçtan uca çalıştı. Not: köprü testinde h_pre/h_post ham mesafe (karar: A, 2026-10-14). 2026-10-15: oturum aç/kapa çalıştı; GPS'siz oturumda alan ve karbon 0 (doğru).
 2. ~~SIM hattı açılınca `09_modem_test`~~ ✅ 2026-10-14: 4G + internet doğrulandı → sırada MQTT doğrudan karttan (sunucu gerekli).
 3. `firmware/grin_module`'ü masa testinde doğrulanan pinler/kodla güncelle (12_hepsi + 13_kopru temel alınır), SD tampon (buffer.jsonl), status paketi.
 4. RTK gelince: ZED-F9P UART, NTRIP (TUSAGA), fix/hacc → alan hesabı.

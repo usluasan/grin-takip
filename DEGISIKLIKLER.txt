@@ -46,3 +46,9 @@ GRIN Takip - Degisiklikler (sade liste; yeni kayit en alta)
   - Bu testte "cim boyu" alanlarinda henuz cim boyu degil, sensorun olctugu ham mesafe gorunur
     (senin kararin: A). Gercek cim boyu hesabi ana yazilima eklenecek.
   - README guncellendi: sunucu testleri artik Docker icinde calistiriliyor.
+
+[15 Ekim 2026] Oturum kapanma hatasi duzeltildi (surum v0.1.3 Borlaug)
+  - Karti sallayarak "biciyor" durumu ve bir calisma oturumu acildi. Oturum 10 dk sonra
+    kapanmasi gerekirken kapanmiyordu: konum (GPS) olmayan oturumda kod hata veriyordu. Duzeltildi.
+  - Sonuc dogru: oturum kapandi, GPS olmadigi icin alan 0 m2 ve karbon 0 hesaplandi
+    (sabit test konumu hesaba girmedi).

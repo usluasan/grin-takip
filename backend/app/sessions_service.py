@@ -67,11 +67,12 @@ def close_session(db: Session, session_id: int, ended_at: Optional[datetime] = N
         s.site_id = guess_site_id(db, m, g["track_wkt"])
     db.flush()
 
-    # Geography kolonlarını WKT üzerinden yaz (geoalchemy2 tipini atlayıp doğrudan SQL)
+    # Geography kolonlarını WKT üzerinden yaz (geoalchemy2 tipini atlayıp doğrudan SQL).
+    # CAST şart: değer None olunca PostgreSQL parametre türünü çıkaramıyor (AmbiguousParameter).
     db.execute(text("""
         UPDATE sessions SET
-          track = CASE WHEN :t IS NULL THEN NULL ELSE ST_GeogFromText(:t) END,
-          swath = CASE WHEN :w IS NULL THEN NULL ELSE ST_GeogFromText(:w) END
+          track = CASE WHEN CAST(:t AS text) IS NULL THEN NULL ELSE ST_GeogFromText(CAST(:t AS text)) END,
+          swath = CASE WHEN CAST(:w AS text) IS NULL THEN NULL ELSE ST_GeogFromText(CAST(:w AS text)) END
         WHERE id = :id
     """), {"t": f"SRID=4326;{g['track_wkt']}" if g["track_wkt"] else None,
            "w": f"SRID=4326;{g['swath_wkt']}" if g["swath_wkt"] else None, "id": s.id})

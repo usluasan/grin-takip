@@ -57,9 +57,9 @@ def create_site(cid: int, body: schemas.SiteIn, db: Session = Depends(get_db),
     try:
         row = db.execute(text("""
             INSERT INTO sites (customer_id, name, polygon, grass_area_m2, notes)
-            VALUES (:c, :n, CASE WHEN :p IS NULL THEN NULL
+            VALUES (:c, :n, CASE WHEN CAST(:p AS text) IS NULL THEN NULL
                                  ELSE ST_SetSRID(ST_GeomFromGeoJSON(CAST(:p AS text)), 4326)::geography END,
-                    COALESCE(:a, CASE WHEN :p IS NULL THEN NULL
+                    COALESCE(:a, CASE WHEN CAST(:p AS text) IS NULL THEN NULL
                                       ELSE ST_Area(ST_SetSRID(ST_GeomFromGeoJSON(CAST(:p AS text)), 4326)::geography) END),
                     :notes)
             RETURNING id

@@ -103,3 +103,20 @@ PATCH: Docker yığını ilk kez çalıştı, kart → web uçtan uca masa testi
 | Oturum açma/kapama, alan ve karbon hesabı | test edilmedi (biçme durumu ve RTK gerekiyor) |
 | Karttan doğrudan MQTT (4G) | test edilmedi (sunucu dışarıdan erişilebilir değil) |
 | Sunucu kurulumu | test edilmedi |
+
+---
+
+## v0.1.3 Borlaug — 15 Ekim 2026
+
+PATCH: oturum kapatma hatası düzeltildi (G011). Kayıtlar: G011–G012.
+
+**Test durumu** (Mac, Docker, masa testi)
+
+| Parça | Sonuç |
+|---|---|
+| Biçme algılama (kart sallandı, titreşim RMS 8,6) | ✅ `state=mowing`, oturum #1 açıldı |
+| Oturumun 10 dk sonra kendiliğinden kapanması | ❌ önce kapanmadı (AmbiguousParameter) → düzeltmeden sonra ✅ kapandı, `ended_at` = son biçme zamanı |
+| Sabit test konumu (fix=1, hacc=5) alan hesabına girmedi | ✅ 213 nokta, 0 iyi, alan 0 m², fix_ratio 0, CO₂e 0 |
+| Saha ekleme API'si (poligonlu / poligonsuz) | ✅ (test kayıtları silindi) |
+| backend pytest (Docker, Python 3.12) | ✅ 15/15 |
+| Gerçek RTK ile alan hesabı | test edilmedi (ZED-F9P siparişte) |
