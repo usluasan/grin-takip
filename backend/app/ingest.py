@@ -99,7 +99,7 @@ def validate_event(d: dict) -> dict:
     if d.get("v") != 1:
         raise ValueError("paket sürümü v=1 değil")
     typ = d.get("type")
-    if typ not in ("session_start", "session_end", "error"):
+    if typ not in ("session_start", "session_end", "calibrated", "error"):
         raise ValueError(f"event type geçersiz: {typ}")
     return {"time": _ts(d.get("ts")), "type": typ, "msg": str(d.get("msg", ""))[:500]}
 

@@ -32,7 +32,7 @@ Broker: `mqtt://<sunucu>:1883` (pilot), TLS 8883 (üretim). Her cihazın kullan�
 | `grin/<device_id>/telemetry` | cihaz → bulut | 1 Hz telemetri (aşağıda) |
 | `grin/<device_id>/status` | cihaz → bulut | 30 sn'de bir sağlık (pil, sinyal, sürüm) |
 | `grin/<device_id>/event` | cihaz → bulut | oturum başı/sonu, hata |
-| `grin/<device_id>/cmd` | bulut → cihaz | `{"cmd":"reboot"}`, `{"cmd":"ota","url":"..."}`, `{"cmd":"interval","sec":1}` |
+| `grin/<device_id>/cmd` | bulut → cihaz | `{"cmd":"reboot"}`, `{"cmd":"interval","sec":1}` (1–60), `{"cmd":"calibrate"}`, `{"cmd":"ota","url":"..."}` (henüz yok) |
 
 ### 3.1 Telemetri paketi (JSON, QoS 1)
 
@@ -83,14 +83,18 @@ Broker: `mqtt://<sunucu>:1883` (pilot), TLS 8883 (üretim). Her cihazın kullan�
 ### 3.2 Durum paketi
 
 ```json
-{"v":1,"ts":1759600000,"bat":3.92,"rssi":-71,"fw":"0.3.1","sd_free_mb":28000,"ntrip":true,"sats":14}
+{"v":1,"ts":1759600000,"bat":3.92,"rssi":-71,"fw":"0.4.0","sd_free_mb":28000,"ntrip":true,"sats":14,"cal":true}
 ```
+
+`cal` (fw 0.4.0+, isteğe bağlı): montaj yüksekliği sahada kalibre edildi mi. `false` ise çim boyu `DEFAULT_MOUNT_HEIGHT_MM` varsayımıyla hesaplanmıştır. Sunucu şimdilik saklamaz.
 
 ### 3.3 Olay paketi
 
 ```json
-{"v":1,"ts":1759600000,"type":"session_start|session_end|error","msg":"..."}
+{"v":1,"ts":1759600000,"type":"session_start|session_end|calibrated|error","msg":"..."}
 ```
+
+`calibrated`: montaj yüksekliği kalibre edildi (Serial `c` ya da `{"cmd":"calibrate"}`). Kalibrasyon ölçüm alamazsa `error` / `calibration_failed_no_reading`.
 
 ## 4. Veritabanı (PostgreSQL)
 
@@ -276,8 +280,9 @@ Ingest worker, cihazdan `state=mowing` görünce ve açık oturum yoksa oturum a
 |---|---|
 | I²C SDA/SCL | 15 / 16 |
 | VL53L1X #2 XSHUT | 7 |
-| A02YYUW #1 / #2 (ESP RX) | 39 / 40 |
+| A02YYUW (ESP RX, yazılım seri 9600; tek sensör → `us_pre`) | 39 |
 | GNSS UART (ESP RX / TX) | 41 / 42 |
 | Modem UART (ESP RX / TX) | 17 / 18, 115200 baud (AT testiyle doğrulandı, 2026-10-14) |
 | microSD (CMD/CLK/DATA) | 4 / 5 / 6 |
 | RGB LED | 38 |
+| UART dağılımı | UART0 = USB konsol (CDC kapalı), UART1 = modem, UART2 = GNSS, ultrasonik = yazılım seri |

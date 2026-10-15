@@ -52,3 +52,8 @@ GRIN Takip - Degisiklikler (sade liste; yeni kayit en alta)
     kapanmasi gerekirken kapanmiyordu: konum (GPS) olmayan oturumda kod hata veriyordu. Duzeltildi.
   - Sonuc dogru: oturum kapandi, GPS olmadigi icin alan 0 m2 ve karbon 0 hesaplandi
     (sabit test konumu hesaba girmedi).
+
+[15 Ekim 2026] Sunucu ile modul arasindaki "sozlesme" genisletildi
+  - Modul "montaj yuksekligi kalibre edildi" bilgisini yollayabilecek; sunucu bunu artik kabul ediyor.
+  - Bu, yeni ana yazilimin (fw 0.4.0) ihtiyaci. Ana yazilimin kendisi karta yuklenip denendikten
+    sonra ayrica kaydedilecek.

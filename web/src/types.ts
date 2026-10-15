@@ -124,12 +124,14 @@ export interface StatusPacket {
   sd_free_mb?: number
   ntrip?: boolean
   sats?: number
+  /** fw 0.4.0+: montaj yüksekliği kalibre mi */
+  cal?: boolean
 }
 /** SPEC §3.3 olay paketi */
 export interface EventPacket {
   v: number
   ts: number
-  type: 'session_start' | 'session_end' | 'error'
+  type: 'session_start' | 'session_end' | 'calibrated' | 'error'
   msg?: string
 }
 /** WS mesajı: {device_id, machine_id, type, data}. type ayrıştırıcıdır; ilk mesaj {type:'hello'} istemcide yoksayılır. */
